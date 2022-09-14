@@ -1,1 +1,2 @@
 --require spec_helper
+--require ./lib/database_connection
