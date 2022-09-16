@@ -11,6 +11,12 @@ describe Application do
   # class so our tests work.
   let(:app) { Application.new }
 
+  def create_test_post_with_tags(title, tags)
+    PostManager.instance.add_post(
+      Post.new(title, "I'm just a test post. Nothing much to say really.", tags)
+    )
+  end
+
   # setup
   before do
     create_test_post_with_tags('Test cooking post', ['cooking'])
@@ -33,11 +39,5 @@ describe Application do
       expect(response.body).to include('Test cooking post')
       expect(response.body).to_not include('Test programming post')
     end
-  end
-
-  def create_test_post_with_tags(title, tags)
-    PostManager.instance.add_post(
-      Post.new(title, "I'm just a test post. Nothing much to say really.", tags)
-    )
   end
 end

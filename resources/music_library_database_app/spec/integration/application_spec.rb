@@ -14,6 +14,7 @@ def reset_artists_table
   connection.exec(seed_sql)
 end
 
+
 describe Application do
   before(:each) do 
     reset_albums_table
@@ -30,7 +31,10 @@ describe Application do
     it "lists the albums" do
       response = get('/albums')
       expect(response.status).to eq(200)
-      expect(response.body).to eq "Doolittle, Surfer Rosa, Waterloo, Super Trouper, Bossanova, Lover, Folklore, I Put a Spell on You, Baltimore, Here Comes the Sun, Fodder on My Wings, Ring Ring"
+      expect(response.body).to include("Title: Waterloo")
+      expect(response.body).to include("<h1>Albums</h1>")
+      expect(response.body).to include("<head></head>")
+      expect(response.body).to include("Release year: 1982")
     end
   end
 
@@ -40,25 +44,81 @@ describe Application do
       expect(response.status).to eq(200)
       response = get('/albums')
       expect(response.status).to eq(200)
-      expect(response.body).to eq "Doolittle, Surfer Rosa, Waterloo, Super Trouper, Bossanova, Lover, Folklore, I Put a Spell on You, Baltimore, Here Comes the Sun, Fodder on My Wings, Ring Ring, Voyage"
+      expect(response.body).to include("Voyage")
+      expect(response.body).to include("Release year: 2022")
     end
   end
+
+
+  #context 'GET /artists' do
+    #it 'returns a list of artists' do
+     # response = get('/artists')
+     # expect(response.status).to eq(200)
+     # expect(response.body).to eq "Pixies, ABBA, Taylor Swift, Nina Simone"
+   # end
+ #end
+ 
 
   context 'GET /artists' do
-    it 'returns a list of artists' do
+    it 'returns a list of artists with links' do
       response = get('/artists')
       expect(response.status).to eq(200)
-      expect(response.body).to eq "Pixies, ABBA, Taylor Swift, Nina Simone"
+      expect(response.body).to include('<a href="/artists/1" </a>')
     end
   end
 
-  context 'POST /artists' do
-    it "creates a new artist and adds to table" do
-      response = post('./artists', name: 'Wild nothing', genre: 'Indie')
+  context 'GET /artists/new' do
+    it "shows a form to create a new artist" do
+      response = get('/artists/new')
       expect(response.status).to eq(200)
-      response = get('/artists')
+      expect(response.body).to include('<h1>Add an artist</h1>')
+      expect(response.body).to include('<form action="/artists" method="POST">')
+    end
+  end
+
+  context 'GET /artists/:id' do
+    it "returns information from selected artist" do
+      response = get('/artists/2')
       expect(response.status).to eq(200)
-      expect(response.body).to eq "Pixies, ABBA, Taylor Swift, Nina Simone, Wild nothing"
+      expect(response.body).to include("<h1> ABBA </h1>")
+      expect(response.body).to include("<head></head>")
+      expect(response.body).to include("Pop")
+    end
+  end
+
+
+  #context 'POST /artists' do
+    #it "creates a new artist and adds to table" do
+      #response = post('/artists', name: 'Wild nothing', genre: 'Indie')
+      #expect(response.status).to eq(200)
+      #response = get('/artists')
+      #expect(response.status).to eq(200)
+      #expect(response.body).to include('<a href="/artists/1" </a>')
+   # end
+  #end
+
+  context 'GET to /albums/:id' do
+    it 'returns data based off of album' do
+      response = get('/albums/2')
+      expect(response.status).to eq(200)
+      expect(response.body).to include("Surfer Rosa")
+      expect(response.body).to include("Pixies")
+    end
+  end
+
+  context 'POST to /artists/new and do a bad request' do
+    it 'gives a bad request error' do
+      response = post('/artists', name: nil, genre: 'blues')
+      expect(response.status).to eq(400)
+      expect(response.body).to include("Bad request!")
+    end
+  end
+
+  context 'POST to /albums/new and do a bad request' do
+    it 'gives a bad request error' do
+      response = post('/albums', title: "Hello world", release_year: nil, artist_id: "2")
+      expect(response.status).to eq(400)
+      expect(response.body).to include("Bad request!")
     end
   end
 end

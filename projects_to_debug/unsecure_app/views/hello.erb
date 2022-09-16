@@ -5,8 +5,16 @@
     <title>Greeter app</title>
   </head>
   <body>
+  <div>
+  <% if @name.gsub(/[^0-9a-z ]/i, "") != @name %>
+    <p> Incorrect input for name. </p>
+    <a href="/">Try again</a>
+    <% else %>
     <p>
       Hi <%= @name %>!
     </p>
+    <a href="/">Back to the start</a>
+    <% end %>
+    <div>
   </body>
 </html>

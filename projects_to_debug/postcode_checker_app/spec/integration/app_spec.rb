@@ -10,6 +10,8 @@ describe Application do
   # class so our tests work.
   let(:app) { Application.new }
 
+  
+
   context 'GET /' do
     it 'should get the form' do
       response = get('/')

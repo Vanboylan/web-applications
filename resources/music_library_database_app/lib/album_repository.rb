@@ -40,6 +40,21 @@ class AlbumRepository
     return album
   end
 
+  def find_albums(id)
+    sql = 'SELECT id, title, release_year FROM albums where artist_id = $1'
+    result_set = DatabaseConnection.exec_params(sql, [id])
+    albums = []
+    result_set.each do |album|
+      new_album = Album.new
+      new_album.id = album['id']
+      new_album.title = album['title']
+      new_album.release_year = album['release_year']
+      albums << new_album
+    end
+    return albums
+  end
+
+
   def create(album)
     sql = 'INSERT INTO albums (title, release_year, artist_id) VALUES ($1, $2, $3);'
     result_set = DatabaseConnection.exec_params(sql, [album.title, album.release_year, album.artist_id])
@@ -50,5 +65,12 @@ class AlbumRepository
   def delete(id)
     sql = 'DELETE FROM albums WHERE id = $1;';
     DatabaseConnection.exec_params(sql, [id]);
+  end
+
+  def album_artist(id)
+    sql = 'SELECT name FROM artists WHERE id = $1;'
+    params = [id]
+    result = DatabaseConnection.exec_params(sql, params)
+    return result['name']
   end
 end
